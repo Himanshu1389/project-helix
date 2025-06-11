@@ -130,8 +130,9 @@ if st.session_state.logged_in:
     """, unsafe_allow_html=True)
 
     # Title + Logo
-    image_path = os.path.join(os.path.dirname(__file__), "assets", "helix_logo.png")
-    st.sidebar.image(image_path, width=100)
+    image_path = os.path.join("assets", "helix_logo.png")
+    if os.path.exists(image_path):
+        st.sidebar.image(image_path, width=100)
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Dashboard", "Employee Data", "Compensation Analysis", "Market Insights", "AI Insights", "Data Management", "Settings"])
 
@@ -143,7 +144,8 @@ if st.session_state.logged_in:
     # Load data
     # @st.cache_data # Commented out to ensure data is always reloaded
     def load_data():
-        data_dir = os.path.join(os.path.dirname(__file__), "data")
+        # Use relative paths for data files
+        data_dir = "data"
         employee_df = pd.read_csv(os.path.join(data_dir, "employee_data.csv"))
         benchmark_df = pd.read_csv(os.path.join(data_dir, "benchmark_data.csv"))
 
@@ -166,6 +168,7 @@ if st.session_state.logged_in:
                 st.warning(f"Could not load settings from settings.csv. Using defaults. Error: {e}")
         else:
             # Create settings.csv with default values if it doesn't exist
+            os.makedirs(data_dir, exist_ok=True)
             pd.DataFrame([settings]).to_csv(settings_path, index=False)
 
         # Initialize/update session state with loaded or default settings
@@ -180,7 +183,7 @@ if st.session_state.logged_in:
         employee_df.dropna(subset=['salary', 'experience'], inplace=True) # Drop rows with NaN in critical columns after conversion
 
         try:
-            explainer = joblib.load(os.path.join(os.path.dirname(__file__), "models", "shap_explainers.pkl"))
+            explainer = joblib.load(os.path.join("models", "shap_explainers.pkl"))
         except:
             explainer = None
         return employee_df, benchmark_df, explainer
