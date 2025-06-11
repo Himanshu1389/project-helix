@@ -30,7 +30,7 @@ def login_screen():
             if username == "admin" and password == "admin@123":
                 st.session_state.logged_in = True
                 st.success("Logged in successfully!")
-                st.experimental_rerun() # Rerun to switch to main app
+                st.rerun() # Rerun to switch to main app
             else:
                 st.error("Invalid username or password. Please try again.")
 
@@ -1013,7 +1013,7 @@ if st.session_state.logged_in:
                 settings_path = os.path.join(os.path.dirname(__file__), "data", "settings.csv")
                 settings_df.to_csv(settings_path, index=False)
                 st.success("Settings updated successfully! Please refresh the page to see changes.")
-                st.experimental_rerun()
+                st.rerun()
 
 # Fallback for when not logged in
 else:
