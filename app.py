@@ -299,7 +299,7 @@ if st.session_state.logged_in:
                 if st.button(f"**{dept_name}** ({count})", key=f"dept_card_{dept_name}"):
                     st.session_state.selected_dept = dept_name
                     st.session_state.page_number = 1 # Reset pagination on filter change
-                    st.experimental_rerun() # Rerun to apply new filter and page number
+                    st.rerun() # Rerun to apply new filter and page number
 
             card_index += 1
 
@@ -326,13 +326,13 @@ if st.session_state.logged_in:
         with col_prev:
             if st.button("Previous", disabled=st.session_state.page_number <= 1):
                 st.session_state.page_number -= 1
-                st.experimental_rerun()
+                st.rerun()
         with col_status:
             st.markdown(f"<div style='text-align: center;'>Page {st.session_state.page_number} of {total_pages}</div>", unsafe_allow_html=True)
         with col_next:
             if st.button("Next", disabled=st.session_state.page_number >= total_pages):
                 st.session_state.page_number += 1
-                st.experimental_rerun()
+                st.rerun()
 
         # Calculate start and end index for current page
         start_idx = (st.session_state.page_number - 1) * records_per_page
@@ -413,7 +413,7 @@ if st.session_state.logged_in:
                     uploaded_df = pd.read_csv(uploaded_employee_file)
                     uploaded_df.to_csv(employee_data_path, index=False)
                     st.success("Employee data updated successfully! Please refresh the page to see changes.")
-                    st.experimental_rerun()
+                    st.rerun()
                 except Exception as e:
                     st.error(f"Error processing employee data: {e}")
             
@@ -434,7 +434,7 @@ if st.session_state.logged_in:
                     uploaded_df = pd.read_csv(uploaded_benchmark_file)
                     uploaded_df.to_csv(benchmark_data_path, index=False)
                     st.success("Benchmark data updated successfully! Please refresh the page to see changes.")
-                    st.experimental_rerun()
+                    st.rerun()
                 except Exception as e:
                     st.error(f"Error processing benchmark data: {e}")
 
@@ -469,7 +469,7 @@ if st.session_state.logged_in:
             with cols_cards[card_index % num_cols]:
                 if st.button(f"**{dept_name}** ({count})", key=f"dept_card_analysis_{dept_name}"):
                     st.session_state.selected_dept_analysis = dept_name
-                    st.experimental_rerun()
+                    st.rerun()
             card_index += 1
 
         selected_dept = st.session_state.selected_dept_analysis
