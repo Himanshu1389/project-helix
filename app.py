@@ -262,6 +262,103 @@ if st.session_state.logged_in:
                      color='department')
         st.plotly_chart(fig, use_container_width=True)
 
+        # Pay Equity Analysis Section
+        st.header("📊 Pay Equity Analysis")
+        
+        # Overall Pay Equity Score
+        current_equity_metrics = calculate_equity_metrics(employee_df)
+        current_equity_score = current_equity_metrics.get('equity_alignment_score', 0)
+        
+        # Create a gauge chart for the overall equity score
+        fig_gauge = go.Figure(go.Indicator(
+            mode = "gauge+number",
+            value = current_equity_score,
+            domain = {'x': [0, 1], 'y': [0, 1]},
+            title = {'text': "Overall Pay Equity Score"},
+            gauge = {
+                'axis': {'range': [0, 100]},
+                'bar': {'color': "darkblue"},
+                'steps': [
+                    {'range': [0, 50], 'color': "red"},
+                    {'range': [50, 75], 'color': "orange"},
+                    {'range': [75, 100], 'color': "green"}
+                ],
+                'threshold': {
+                    'line': {'color': "black", 'width': 4},
+                    'thickness': 0.75,
+                    'value': current_equity_score
+                }
+            }
+        ))
+        fig_gauge.update_layout(height=300)
+        st.plotly_chart(fig_gauge, use_container_width=True)
+
+        # Department-wise Pay Equity Analysis
+        st.subheader("Department-wise Pay Equity Analysis")
+        
+        # Calculate equity scores for each department
+        dept_equity_scores = {}
+        for dept in employee_df['department'].unique():
+            dept_df = employee_df[employee_df['department'] == dept]
+            dept_metrics = calculate_equity_metrics(dept_df)
+            dept_equity_scores[dept] = dept_metrics.get('equity_alignment_score', 0)
+        
+        # Create bar chart for department-wise equity scores
+        dept_equity_df = pd.DataFrame({
+            'Department': list(dept_equity_scores.keys()),
+            'Equity Score': list(dept_equity_scores.values())
+        })
+        
+        fig_dept = px.bar(
+            dept_equity_df,
+            x='Department',
+            y='Equity Score',
+            title='Pay Equity Score by Department',
+            color='Equity Score',
+            color_continuous_scale=['red', 'orange', 'green'],
+            range_color=[0, 100]
+        )
+        
+        fig_dept.update_layout(
+            yaxis_title='Equity Score',
+            yaxis_range=[0, 100],
+            showlegend=False
+        )
+        
+        st.plotly_chart(fig_dept, use_container_width=True)
+
+        # Add detailed equity metrics
+        st.subheader("Detailed Equity Metrics")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if 'experience_score' in current_equity_metrics:
+                st.metric(
+                    "Experience-based Equity",
+                    f"{current_equity_metrics['experience_score']:.1f}",
+                    help="Measures how well salaries align with experience levels"
+                )
+            if 'experience_correlation' in current_equity_metrics:
+                st.metric(
+                    "Experience-Salary Correlation",
+                    f"{current_equity_metrics['experience_correlation']:.2f}",
+                    help="Correlation between experience and salary (range: -1 to 1)"
+                )
+        
+        with col2:
+            if 'gender_score' in current_equity_metrics:
+                st.metric(
+                    "Gender-based Equity",
+                    f"{current_equity_metrics['gender_score']:.1f}",
+                    help="Measures gender pay equity (100 = perfect equity)"
+                )
+            if 'gender_pay_ratio' in current_equity_metrics:
+                st.metric(
+                    "Gender Pay Ratio",
+                    f"{current_equity_metrics['gender_pay_ratio']:.2f}",
+                    help="Ratio of lower gender median to higher gender median"
+                )
+
     # Employee Data Page
     elif page == "Employee Data":
         st.title("Employee Data Management")
