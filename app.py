@@ -138,7 +138,7 @@ if st.session_state.logged_in:
     # Logout Button
     if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
-        st.experimental_rerun()
+        st.rerun()
 
     # Load data
     # @st.cache_data # Commented out to ensure data is always reloaded
