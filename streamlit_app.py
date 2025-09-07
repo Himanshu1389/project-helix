@@ -8,6 +8,7 @@ from utils.compensation_metrics import (
     calculate_equity_metrics,
     generate_recommendations
 )
+from utils.compensation_chatbot import create_chatbot_interface
 import shap
 import joblib
 import os
@@ -134,7 +135,7 @@ if st.session_state.logged_in:
     if os.path.exists(image_path):
         st.sidebar.image(image_path, width=100)
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Dashboard", "Employee Data", "Compensation Analysis", "Market Insights", "AI Insights", "Data Management", "Settings"])
+    page = st.sidebar.radio("Go to", ["Dashboard", "Employee Data", "Compensation Analysis", "Market Insights", "AI Insights", "Compensation Assistant", "Data Management", "Settings"])
 
     # Logout Button
     if st.sidebar.button("Logout"):
@@ -984,6 +985,10 @@ if st.session_state.logged_in:
 
             else:
                 st.warning("No recommendations generated. Please check the budget cap and data.")
+
+    # Compensation Assistant Page
+    elif page == "Compensation Assistant":
+        create_chatbot_interface(employee_df, benchmark_df)
 
     # Settings Page
     elif page == "Settings":
